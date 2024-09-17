@@ -17,9 +17,16 @@
     <color name="pink_violet_1">#F4E7EB</color>
     <color name="pink_violet_2">#F3DCDC</color>
     <color name="pink_violet_3">#F5BCBA</color>
-    <color name="pink_violet_4">#E3AADD</color>
+    <color name="pink_violet_4">#C488C3</color>
     <color name="pink_violet_5">#C8A8E9</color>
     <color name="pink_violet_6">#C3C7F3</color>
+
+
+
+    <color name="model_msg">#0C173A</color>
+    <color name="user_msg">#0C5E3A</color>
+    <color name="model_outline">#264FD1</color>
+    <color name="user_outline">#09AA63</color>
 
 
 

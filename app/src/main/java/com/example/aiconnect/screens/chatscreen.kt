@@ -1,13 +1,19 @@
 package com.example.aiconnect.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -44,6 +50,7 @@ import com.example.aiconnect.ui.theme.Purple80
 fun chatscreen(modifier: Modifier = Modifier, viewModel: ChatViewModel) {
     Column(
         modifier = modifier
+            .background(Color.Black)
     ) {
         AppHeader()
 
@@ -64,19 +71,19 @@ fun chatscreen(modifier: Modifier = Modifier, viewModel: ChatViewModel) {
 @Composable
 fun MessageList(modifier: Modifier = Modifier,messageList : List<MessageModel>) {
     if(messageList.isEmpty()){
-//        Column(
-//            modifier = modifier.fillMaxSize(),
-//            horizontalAlignment = Alignment.CenterHorizontally,
-//            verticalArrangement = Arrangement.Center
-//        ) {
-//            Icon(
-//                modifier = Modifier.size(60.dp),
-//                painter = painterResource(id = R.drawable.baseline_question_answer_24),
-//                contentDescription = "Icon",
-//                tint = Purple80,
-//            )
-//            Text(text = "Ask me anything", fontSize = 22.sp)
-//        }
+        Column(
+            modifier = modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Image(
+                modifier = Modifier
+                    .size(60.dp),
+                painter = painterResource(id = R.drawable.ic_ai_logo),
+                contentDescription = "Icon",
+            )
+            Text(text = "Ask me anything", fontSize = 16.sp)
+        }
     }else{
         LazyColumn(
             modifier = modifier,
@@ -98,9 +105,10 @@ fun MessageRow(messageModel: MessageModel) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
-
         Box(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
         ) {
 
             Box(
@@ -109,12 +117,23 @@ fun MessageRow(messageModel: MessageModel) {
                     .padding(
                         start = if (isModel) 8.dp else 70.dp,
                         end = if (isModel) 70.dp else 8.dp,
-                        top = 8.dp,
-                        bottom = 8.dp
+                        top = 5.dp,
+                        bottom = 5.dp
+                    )
+                    .border(
+                        width = 1.dp, // border thickness
+                        color = if (isModel) colorResource(id = R.color.model_outline) else colorResource(
+                            id = R.color.user_outline
+                        ),
+                        shape = RoundedCornerShape(48f) // This should match the shape of the box
                     )
                     .clip(RoundedCornerShape(48f))
-                    .background(if (isModel) colorResource(id = R.color.pink_violet_4) else colorResource(id = R.color.blue_green_4))
-                    .padding(16.dp)
+                    .background(
+                        if (isModel) colorResource(id = R.color.model_msg) else colorResource(
+                            id = R.color.user_msg
+                        )
+                    )
+                    .padding(12.dp)
             ) {
 
                 SelectionContainer {
@@ -124,16 +143,9 @@ fun MessageRow(messageModel: MessageModel) {
                         color = Color.White
                     )
                 }
-
-
             }
-
         }
-
-
     }
-
-
 }
 
 //@Preview(showBackground = true, showSystemUi = true)
@@ -142,12 +154,12 @@ fun AppHeader() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(color = colorResource(id = R.color.blue_green_1))
+            .background(Color.Transparent)
     ) {
         Text(
             modifier = Modifier.padding(10.dp),
             text = "AI Connect",
-            color = colorResource(id = R.color.pink_violet_1),
+            color = Color.White,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold
         )
@@ -163,31 +175,52 @@ fun MessageInput(onMessageSend : (String)-> Unit) {
     }
 
     Row(
-        modifier = Modifier.padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically
+        modifier = Modifier
+            .padding(8.dp),
+        verticalAlignment = Alignment.Bottom,
     ) {
         OutlinedTextField(
             modifier = Modifier
+                .clip(RoundedCornerShape(20.dp))
                 .weight(1f)
-                .background(color = colorResource(id = R.color.pink_violet_6)),
+                .background(color = colorResource(id = R.color.blue_green_3)),
             value = message,
             onValueChange = {
                 message = it
             },
+            placeholder = {
+                Text(text = "Message AI...", color = Color.White.copy(alpha = 0.7f))
+            },
             colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = colorResource(id = R.color.pink_violet_1), // Outline color when focused
-                unfocusedBorderColor = colorResource(id = R.color.pink_violet_4) // Outline color when not focused
-            )
+                focusedTextColor = Color.White, // Input text color
+                focusedBorderColor = Color.Transparent, // No border when focused
+                unfocusedBorderColor = Color.Transparent, // No border when unfocused
+                cursorColor = Color.White // Cursor color
+            ),
+            maxLines = 10
         )
-        IconButton(onClick = {
-            if(message.isNotEmpty()){
-                onMessageSend(message)
-                message = ""
-            }
-        }) {
+
+        Spacer(modifier = Modifier.width(5.dp))
+
+        IconButton(
+            onClick = {
+                if(message.isNotEmpty()){
+                    onMessageSend(message)
+                    message = ""
+                }
+            },
+            modifier = Modifier
+                .size(48.dp)
+                .background(
+                    colorResource(id = R.color.blue_green_3),
+                    shape = RoundedCornerShape(24.dp)
+                )
+                .clip(RoundedCornerShape(24.dp)) // Rounded send button
+        ) {
             Icon(
                 imageVector = Icons.Default.Send,
-                contentDescription = "Send"
+                contentDescription = "Send",
+                tint = Color.White
             )
         }
     }
