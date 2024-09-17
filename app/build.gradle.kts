@@ -70,6 +70,9 @@ dependencies {
     //Dependency for the Google AI client SDK
     implementation("com.google.ai.client.generativeai:generativeai:0.7.0")
 
+    //To Control the system UI
+    implementation ("com.google.accompanist:accompanist-systemuicontroller:0.36.0")
+
 
 
 }

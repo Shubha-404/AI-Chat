@@ -27,6 +27,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,7 +44,7 @@ import androidx.compose.ui.unit.sp
 import com.example.aiconnect.ChatViewModel
 import com.example.aiconnect.MessageModel
 import com.example.aiconnect.R
-import com.example.aiconnect.ui.theme.Purple80
+import kotlinx.coroutines.delay
 
 
 @Composable
@@ -69,8 +70,8 @@ fun chatscreen(modifier: Modifier = Modifier, viewModel: ChatViewModel) {
 }
 
 @Composable
-fun MessageList(modifier: Modifier = Modifier,messageList : List<MessageModel>) {
-    if(messageList.isEmpty()){
+fun MessageList(modifier: Modifier = Modifier, messageList: List<MessageModel>) {
+    if (messageList.isEmpty()) {
         Column(
             modifier = modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -84,22 +85,22 @@ fun MessageList(modifier: Modifier = Modifier,messageList : List<MessageModel>) 
             )
             Text(text = "Ask me anything", fontSize = 16.sp)
         }
-    }else{
+    } else {
         LazyColumn(
             modifier = modifier,
             reverseLayout = true
         ) {
-            items(messageList.reversed()){
-                MessageRow(messageModel = it)
+            items(messageList.reversed()) { message ->
+                // Pass whether it's the latest message and from the model
+                val isLatestModelMessage = message == messageList.last() && message.role == "model"
+                MessageRow(messageModel = message, isLatestModelMessage = isLatestModelMessage)
             }
         }
     }
-
-
 }
 
 @Composable
-fun MessageRow(messageModel: MessageModel) {
+fun MessageRow(messageModel: MessageModel, isLatestModelMessage: Boolean) {
     val isModel = messageModel.role=="model"
 
     Row(
@@ -137,11 +138,17 @@ fun MessageRow(messageModel: MessageModel) {
             ) {
 
                 SelectionContainer {
-                    Text(
-                        text = messageModel.message,
-                        fontWeight = FontWeight.W500,
-                        color = Color.White
-                    )
+                    if (isLatestModelMessage) {
+                        // Apply typing effect for the latest model message
+                        TypingText(text = messageModel.message)
+                    } else {
+                        // Otherwise, just show the message
+                        Text(
+                            text = messageModel.message,
+                            fontWeight = FontWeight.W500,
+                            color = Color.White
+                        )
+                    }
                 }
             }
         }
@@ -225,3 +232,20 @@ fun MessageInput(onMessageSend : (String)-> Unit) {
         }
     }
 }
+
+@Composable
+fun TypingText(text: String) {
+    var displayedText by remember { mutableStateOf("") }
+
+    LaunchedEffect(text) {
+        displayedText = "" // Clear the displayed text before starting
+        text.forEachIndexed { index, char ->
+            delay(5) // Delay between each character
+            displayedText += char // Append the next character
+        }
+    }
+
+    Text(text = displayedText)
+}
+
+
